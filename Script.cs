@@ -88,7 +88,7 @@ namespace Screech
 	        var stack = new Stack<NodeTree>();
 	        stack.Push( root );
 
-	        var lines = sb.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries);
+	        var lines = sb.ToString().Split(new[]{'\n'}, StringSplitOptions.RemoveEmptyEntries);
 	        for (int lineIndex = 0; lineIndex < lines.Length; lineIndex++)
 	        {
 	            sb.Clear();
@@ -165,7 +165,7 @@ namespace Screech
 		            if (depth == stack.Count)
 		            {
 			            var parentParent = stack.Peek();
-			            var parent = parentParent.Children?[^1] ?? null;
+			            var parent = parentParent.Children?[parentParent.Children.Count-1] ?? null;
 			            if( parent is NodeTree tree )
 			            {
 				            bool valid = true;
