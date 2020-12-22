@@ -1,4 +1,4 @@
-﻿# Natural Language Dialogue
+﻿# Screech
 
 A tool to build narrations for games, [ink](https://github.com/inkle/ink)'s simpler, more concise and friendly cousin. Similar to yarn spinner, twine and the likes.
 
