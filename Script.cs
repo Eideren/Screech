@@ -172,9 +172,9 @@ namespace Screech
 				            if (tree is Line l)
 				            {
 					            valid = false;
-					            for (int i = 0; i < l.Content.ArgumentCount; i++)
+					            for (int i = 0; i < l.Content.Arguments.Length; i++)
 					            {
-						            if (l.Content.GetArgument(i) is ShowWhen)
+						            if (l.Content.Arguments[i] is ShowWhen)
 						            {
 							            valid = true;
 							            break;
@@ -241,7 +241,7 @@ namespace Screech
 	                else if ((match = Regex.Match(line, @"\s*>\s*(?'content'.*)")).Success) // Choice
 	                {
 		                var contentFormat = match.Groups["content"].Value.Trim();
-		                var choice = new Choice{ Content = FormattableStringFactory.Create( contentFormat, args ) };
+		                var choice = new Choice{ Content = new Content{ Format = contentFormat, Arguments = args }};
 		                (stack.Peek().Children ??= new List<Node>()).Add( choice );
 	                }
 	                else if ((match = Regex.Match(line, @"\s*<\s*(?'content'.*)")).Success) // Force close choice
@@ -270,7 +270,7 @@ namespace Screech
 	                    var content = match.Groups["content"].Value;
 	                    if (string.IsNullOrWhiteSpace(content))
 		                    continue;
-	                    (stack.Peek().Children ??= new List<Node>()).Add( new Line{ Content = FormattableStringFactory.Create( content.Trim(), args ) } );
+	                    (stack.Peek().Children ??= new List<Node>()).Add( new Line{ Content = new Content{ Format = content.Trim(), Arguments = args } } );
 	                }
 	            }
 	        }

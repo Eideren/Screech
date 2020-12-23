@@ -4,19 +4,18 @@ namespace Screech
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Runtime.CompilerServices;
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using Nodes;
 	
 	
 	
-    public class Reader : IEnumerator<FormattableString[]>
+    public class Reader : IEnumerator<Content[]>
 	{
 		readonly Stack<(NodeTree tree, int currentIndex)> _stack = new();
-		readonly List<(Choice choice, FormattableString content)> _choices = new();
+		readonly List<(Choice choice, Content content)> _choices = new();
 
-		public FormattableString[] Current { get; private set; } = new FormattableString[0];
+		public Content[] Current { get; private set; } = new Content[0];
 		public bool IsChoice = false;
 
 		object IEnumerator.Current => Current;
@@ -24,20 +23,19 @@ namespace Screech
 		
 		public Reader( NodeTree root ) => _stack.Push( ( root, 0 ) );
 		
-		public void Choose( int indexChosen )
+		public virtual void Choose( int indexChosen )
 		{
 			_stack.Push( ( _choices[ indexChosen ].choice, 0 ) );
 			_choices.Clear();
 		}
 
-		bool ShouldShow( FormattableString fs, [MaybeNullWhen(false)]out FormattableString fsFiltered )
+		bool ShouldShow( Content fs, [MaybeNullWhen(false)]out Content fsFiltered )
 		{
 			// Scan for method
 			bool hasDelegate = false;
-			int max = fs.ArgumentCount;
-			for (int i = 0; i < max; i++)
+			foreach( object argument in fs.Arguments )
 			{
-				if (fs.GetArgument(i) is ShowWhen)
+				if (argument is ShowWhen)
 				{
 					hasDelegate = true;
 					break;
@@ -52,7 +50,6 @@ namespace Screech
 
 			// Test method to find this line's visibility and replace references to that method in format string
 			var show = false;
-			var args = fs.GetArguments();
 
 			var toRemove = new List<(int s, int l)>();
 
@@ -64,8 +61,10 @@ namespace Screech
 					continue;
             
 				var content = match.Groups["index"];
-				if ( args[ int.Parse( content.Value ) ] is ShowWhen sw)
+				ref var arg = ref fs.Arguments[ int.Parse( content.Value ) ];
+				if (arg is ShowWhen sw)
 				{
+					arg = null;
 					toRemove.Add( (match.Index, match.Length) );
 					show |= sw();
 				}
@@ -86,11 +85,11 @@ namespace Screech
 				sb.Remove(s, l);
 			}
 			
-			fsFiltered = FormattableStringFactory.Create(sb.ToString(), args);
+			fsFiltered = new Content{ Format = sb.ToString(), Arguments = fs.Arguments };
 			return true;
 		}
 
-		public bool MoveNext()
+		public virtual bool MoveNext()
 		{
 			if( _choices.Count > 0 )
 				throw new InvalidOperationException( $"Cannot call {nameof(MoveNext)} after a choice without calling {nameof(Choose)} beforehand" );
@@ -162,7 +161,7 @@ namespace Screech
 						if( _choices.Count == 0 )
 							continue;
 
-						Current = new FormattableString[_choices.Count];
+						Current = new Content[_choices.Count];
 						for (int i = 0; i < _choices.Count; i++)
 							Current[i] = _choices[i].Item2;
 						return true;
@@ -193,7 +192,7 @@ namespace Screech
 			} while( true );
 		}
 
-		public void Reset()
+		public virtual void Reset()
 		{
 			while (_stack.Count > 1)
 				_stack.Pop();

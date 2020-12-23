@@ -1,4 +1,6 @@
+// ReSharper disable CheckNamespace
 namespace Screech.Nodes
+	// ReSharper restore CheckNamespace
 {
 	using System;
 	using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace Screech.Nodes
 
     public class Line : NodeTree
     {
-	    public FormattableString Content { get; internal set; } = null!;
+	    public Content Content { get; internal set; } = null!;
 	    public override string ToString() => Content.Format;
     }
 
@@ -37,7 +39,7 @@ namespace Screech.Nodes
 
     public class Choice : NodeTree
     {
-	    public FormattableString Content { get; internal set; } = null!;
+	    public Content Content { get; internal set; } = null!;
 	    public override string ToString() => $"> {Content.Format}";
     }
 
