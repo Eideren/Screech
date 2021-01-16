@@ -28,7 +28,7 @@ namespace Screech
 			public override string ToString()
 			{
 				_nop();
-				return null;
+				return "";
 			}
 		}
 

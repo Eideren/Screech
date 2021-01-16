@@ -4,6 +4,7 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetFramework>$(LibFW)</TargetFramework>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
 </Project>

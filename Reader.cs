@@ -33,7 +33,7 @@ namespace Screech
 		{
 			// Scan for method
 			bool hasDelegate = false;
-			foreach( object argument in fs.Arguments )
+			foreach( var argument in fs.Arguments )
 			{
 				if (argument is ShowWhen)
 				{
